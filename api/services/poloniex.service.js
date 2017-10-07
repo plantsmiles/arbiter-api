@@ -17,9 +17,7 @@ class PoloniexService {
     }
 
     async connect(tradingPairs) {
-        this.tradingPairs = tradingPairs.map((tradingPair) => {
-            return tradingPair.replace('-', '_');
-        });
+        this.tradingPairs = tradingPairs;
 
         _.each(this.tradingPairs, async (tradingPair) => {
             logger.info(`Initializing ${tradingPair} poloniex order book`);
@@ -28,7 +26,7 @@ class PoloniexService {
     }
 
     async updateOrderBook(tradingPair) {
-        const orderBook = await this.poloniexApi.returnOrderBook(tradingPair);
+        const orderBook = await this.poloniexApi.returnOrderBook(tradingPair.replace('-', '_'));
         const asks = orderBook.asks.map((ask) => {
             const pricePoint = Number(ask[0]);
             const volume = ask[1];

@@ -36,10 +36,31 @@ class BittrexService {
             type: 'both'
         };
         const orderBookUrlRequest = `${config.bittrexApiUrl}${this.orderBookPath}?${queryString.stringify(queryParam)}`;
-        const orderBook = await requestPromise(orderBookUrlRequest);
-        const orderBookResponse = JSON.parse(orderBook);
+        const orderBookResponse = await requestPromise(orderBookUrlRequest);
+        const orderBook = JSON.parse(orderBookResponse).result;
 
-        this.bittrexCache.set(tradingPair, orderBookResponse.result);
+        const asks = orderBook.sell.map((ask) => {
+            const pricePoint = ask.Rate;
+            const volume = ask.Quantity;
+            return {
+                pricePoint: pricePoint,
+                volume: volume
+            }
+        });
+
+        const bids = orderBook.buy.map((bid) => {
+            const pricePoint = bid.Rate;
+            const volume = bid.Quantity;
+            return {
+                pricePoint: pricePoint,
+                volume: volume
+            }
+        });
+
+        this.bittrexCache.set(tradingPair, {
+            asks: asks,
+            bids: bids
+        });
     }
 
     async getOrderBook(tradingPair) {
