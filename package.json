@@ -1,0 +1,27 @@
+{
+  "name": "arbiter",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint **.js",
+    "start": "node app/app",
+    "test": "mocha test"
+  },
+  "dependencies": {
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "dotenv": "^4.0.0",
+    "express": "~4.15.5",
+    "log4js": "^2.3.4",
+    "morgan": "~1.9.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.8.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^4.0.1"
+  },
+  "engines": {
+    "node": "8.6.0"
+  }
+}
