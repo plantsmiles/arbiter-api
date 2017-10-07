@@ -8,6 +8,7 @@ const config = require('./api/util/config');
 
 const index = require('./api/routes/index');
 const actuator = require('./api/routes/actuator.route');
+const markets = require('./api/routes/markets.route');
 
 const bittrexService = require('./api/services/bittrex.service');
 
@@ -23,6 +24,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // routes
 app.use('/', index);
 app.use('/actuator', actuator);
+app.use('/markets', markets);
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');

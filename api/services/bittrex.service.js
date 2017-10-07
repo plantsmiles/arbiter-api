@@ -12,7 +12,7 @@ const queryString = require('query-string');
 class BittrexService {
 
     constructor() {
-        this.bittrexCache = new NodeCache({stdTTL: config.cacheTTL, checkperiod: 5 });
+        this.bittrexCache = new NodeCache({stdTTL: config.cacheTTL, checkperiod: 10});
         this.orderBookPath = '/public/getorderbook';
 
         this.bittrexCache.on('expired', async (tradingPairKey, value) => {
@@ -37,10 +37,13 @@ class BittrexService {
         };
         const orderBookUrlRequest = `${config.bittrexApiUrl}${this.orderBookPath}?${queryString.stringify(queryParam)}`;
         const orderBook = await requestPromise(orderBookUrlRequest);
-        this.bittrexCache.set(tradingPair, orderBook.result);
+        const orderBookResponse = JSON.parse(orderBook);
+
+        this.bittrexCache.set(tradingPair, orderBookResponse.result);
     }
 
     async getOrderBook(tradingPair) {
+        logger.info(this.bittrexCache.get(tradingPair));
         return this.bittrexCache.get(tradingPair);
     }
 
