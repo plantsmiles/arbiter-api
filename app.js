@@ -1,14 +1,19 @@
+require('dotenv').config();
+
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const index = require('./routes/index');
-const actuator = require('./routes/actuator');
-const logger = require('./util/logger');
-const env = require('dotenv');
+const logger = require('./api/util/logger');
+const config = require('./api/util/config');
 
-env.config();
+const index = require('./api/routes/index');
+const actuator = require('./api/routes/actuator.route');
+
+const bittrexService = require('./api/services/bittrex.service');
+
+bittrexService.connect(config.tradingPairs);
+
 const app = express();
-const port = process.env.PORT || 3000;
 
 // middleware
 app.use(morgan('dev'));
@@ -32,6 +37,6 @@ app.use((err, req, res, next) => {
       .send(err.message || 'Internal Server Error');
 });
 
-app.listen(port, () => {
-    logger.info(`Arbiter API listening on port ${port}!`)
+app.listen(config.port, () => {
+    logger.info(`Arbiter API listening on port ${config.port}!`)
 });
