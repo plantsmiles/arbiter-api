@@ -6,8 +6,8 @@ const requestPromise = require('request-promise');
 const queryString = require('query-string');
 
 // ideally was going to use websocket api from the wrapper "node-bittrex-api" to get order book
-// but `updateExchangeState` only returns recently filled orders, and their orderBook REST call seems broken
-// the v1 vs v2 implementations seem to be causing the issue
+// but `updateExchangeState` only returns recently filled orders and not orderbooks
+// bittrex's recomendation is to listen via websockets for changes then call REST endpoint for orderbook
 
 class BittrexService {
 
