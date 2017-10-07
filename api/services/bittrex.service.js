@@ -43,7 +43,6 @@ class BittrexService {
     }
 
     async getOrderBook(tradingPair) {
-        logger.info(this.bittrexCache.get(tradingPair));
         return this.bittrexCache.get(tradingPair);
     }
 
