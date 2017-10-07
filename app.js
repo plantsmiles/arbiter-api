@@ -11,8 +11,10 @@ const actuator = require('./api/routes/actuator.route');
 const markets = require('./api/routes/markets.route');
 
 const bittrexService = require('./api/services/bittrex.service');
+const poloniexService = require('./api/services/poloniex.service');
 
 bittrexService.connect(config.tradingPairs);
+poloniexService.connect(config.tradingPairs);
 
 const app = express();
 
