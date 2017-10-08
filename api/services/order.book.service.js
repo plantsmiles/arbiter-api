@@ -1,22 +1,22 @@
-const config = require('../util/config');
-const NodeCache = require('node-cache');
-const requestPromise = require('request-promise');
-const queryString = require('query-string');
-const BaseExchangeService = require('./base.exchange.service');
+const bittrexService = require('../services/bittrex.service');
+const poloniexService = require('../services/poloniex.service');
 
-// ideally was going to use websocket api from the wrapper "node-bittrex-api" to get order book
-// but `updateExchangeState` only returns recently filled orders and not orderbooks
-// bittrex's recomendation is to listen via websockets for changes then call REST endpoint for orderbook
-
-class BittrexService extends BaseExchangeService {
+class OrderBookService {
 
     constructor() {
-        super('Bittrex', new NodeCache({stdTTL: config.cacheTTL, checkperiod: 10}));
-        this.orderBookPath = '/public/getorderbook';
+        this.bittrexCache = new NodeCache({stdTTL: 0});
+    }
+
+    async connect(tradingPairs) {
+        this.tradingPairs = tradingPairs;
+
+        _.each(this.tradingPairs, async (tradingPair) => {
+            logger.info(`Initializing ${tradingPair} bittrex order book`);
+            await this.updateOrderBook(tradingPair);
+        });
     }
 
     async updateOrderBook(tradingPair) {
-        this.logger.debug(`${this.exchangeName} calling REST API for ${tradingPair}`);
         const queryParam = {
             market: tradingPair,
             type: 'both'
@@ -48,7 +48,16 @@ class BittrexService extends BaseExchangeService {
             bids: bids
         });
     }
+
+    async getOrderBook(tradingPair) {
+        return this.bittrexCache.get(tradingPair);
+    }
+
+    // visible for testing
+    _setClient(bittrexClient) {
+
+    }
 }
 
 // create a singleton
-module.exports = exports = new BittrexService();
+module.exports = exports = new OrderBookService();
