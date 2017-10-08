@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const logger = require('./api/util/logger');
 const config = require('./api/util/config');
 
@@ -22,6 +23,13 @@ const app = express();
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors({
+    'credentials': true,
+    'methods': 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
+    'optionsSuccessStatus': 204,
+    'origin': true,
+    'preflightContinue': true,
+}));
 
 // routes
 app.use('/', index);
