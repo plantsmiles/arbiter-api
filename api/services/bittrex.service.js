@@ -28,19 +28,13 @@ class BittrexService extends BaseExchangeService {
         const asks = orderBook.sell.map((ask) => {
             const pricePoint = ask.Rate;
             const volume = ask.Quantity;
-            return {
-                pricePoint: pricePoint,
-                volume: volume
-            }
+            return [pricePoint, volume];
         });
 
         const bids = orderBook.buy.map((bid) => {
             const pricePoint = bid.Rate;
             const volume = bid.Quantity;
-            return {
-                pricePoint: pricePoint,
-                volume: volume
-            }
+            return [pricePoint, volume];
         });
 
         this.bittrexCache.set(tradingPair, {

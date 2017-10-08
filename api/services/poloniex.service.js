@@ -16,19 +16,13 @@ class PoloniexService extends BaseExchangeService {
         const asks = orderBook.asks.map((ask) => {
             const pricePoint = Number(ask[0]);
             const volume = ask[1];
-            return {
-                pricePoint: pricePoint,
-                volume: volume
-            }
+            return [pricePoint, volume];
         });
 
         const bids = orderBook.bids.map((bid) => {
             const pricePoint = Number(bid[0]);
             const volume = bid[1];
-            return {
-                pricePoint: pricePoint,
-                volume: volume
-            }
+            return [pricePoint, volume]
         });
 
         this.exchangeCache.set(tradingPair, {
