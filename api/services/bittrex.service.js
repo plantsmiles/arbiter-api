@@ -37,7 +37,7 @@ class BittrexService extends BaseExchangeService {
             return [pricePoint, volume];
         });
 
-        this.bittrexCache.set(tradingPair, {
+        this.exchangeCache.set(tradingPair, {
             asks: asks,
             bids: bids
         });
