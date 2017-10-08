@@ -11,8 +11,8 @@ class PoloniexService extends BaseExchangeService {
     }
 
     async updateOrderBook(tradingPair) {
-        this.logger.debug(`${this.exchangeName} calling REST API for ${tradingPair}`);
         const orderBook = await this.poloniexApi.returnOrderBook(tradingPair.replace('-', '_'));
+        this.logger.debug(`Received order book update from ${this.exchangeName} via REST API for ${tradingPair}`);
         const asks = orderBook.asks.map((ask) => {
             const pricePoint = Number(ask[0]);
             const volume = ask[1];
@@ -36,7 +36,7 @@ class PoloniexService extends BaseExchangeService {
             bids: bids
         });
 
-
+        this.emit('update', tradingPair);
     }
 }
 

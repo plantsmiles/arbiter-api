@@ -16,13 +16,13 @@ class BittrexService extends BaseExchangeService {
     }
 
     async updateOrderBook(tradingPair) {
-        this.logger.debug(`${this.exchangeName} calling REST API for ${tradingPair}`);
         const queryParam = {
             market: tradingPair,
             type: 'both'
         };
         const orderBookUrlRequest = `${config.bittrexApiUrl}${this.orderBookPath}?${queryString.stringify(queryParam)}`;
         const orderBookResponse = await requestPromise(orderBookUrlRequest);
+        this.logger.debug(`Received order book update from ${this.exchangeName} via REST API for ${tradingPair}`);
         const orderBook = JSON.parse(orderBookResponse).result;
 
         const asks = orderBook.sell.map((ask) => {
@@ -47,6 +47,8 @@ class BittrexService extends BaseExchangeService {
             asks: asks,
             bids: bids
         });
+
+        this.emit('update', tradingPair);
     }
 }
 

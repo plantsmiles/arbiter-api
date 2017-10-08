@@ -15,7 +15,7 @@ router.get('/orderbook', async(req, res, next) => {
     const poloniexOrderBook = await poloniexService.getOrderBook(req.query.tradingPair);
 
     const orderBook = {
-        // bittrex: bittrexOrderBook,
+        bittrex: bittrexOrderBook,
         poloniex: poloniexOrderBook
     };
 
