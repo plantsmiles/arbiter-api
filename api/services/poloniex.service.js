@@ -14,13 +14,13 @@ class PoloniexService extends BaseExchangeService {
         const orderBook = await this.poloniexApi.returnOrderBook(tradingPair.replace('-', '_'));
         this.logger.debug(`Received order book update from ${this.exchangeName} via REST API for ${tradingPair}`);
         const asks = orderBook.asks.map((ask) => {
-            const pricePoint = Number(ask[0]);
+            const pricePoint = Number(ask[0]).toFixed(10);
             const volume = ask[1];
             return [pricePoint, volume];
         });
 
         const bids = orderBook.bids.map((bid) => {
-            const pricePoint = Number(bid[0]);
+            const pricePoint = Number(bid[0]).toFixed(10);
             const volume = bid[1];
             return [pricePoint, volume]
         });

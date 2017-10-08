@@ -26,13 +26,13 @@ class BittrexService extends BaseExchangeService {
         const orderBook = JSON.parse(orderBookResponse).result;
 
         const asks = orderBook.sell.map((ask) => {
-            const pricePoint = ask.Rate;
+            const pricePoint = Number(ask.Rate).toFixed(10);
             const volume = ask.Quantity;
             return [pricePoint, volume];
         });
 
         const bids = orderBook.buy.map((bid) => {
-            const pricePoint = bid.Rate;
+            const pricePoint = Number(bid.Rate).toFixed(10);
             const volume = bid.Quantity;
             return [pricePoint, volume];
         });
