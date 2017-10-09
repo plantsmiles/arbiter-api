@@ -1,8 +1,12 @@
 const express = require('express');
-const bittrexService = require('../services/bittrex.service');
-const poloniexService = require('../services/poloniex.service');
+const orderBookService = require('../services/order.book.service');
+const config = require('../util/config');
 
 const router = express.Router();
+
+router.get('/tradingPairs', async(req, res, next) => {
+    res.status(200).send(config.tradingPairs);
+});
 
 router.get('/orderbook', async(req, res, next) => {
     if (!req.query.tradingPair) {
@@ -11,14 +15,7 @@ router.get('/orderbook', async(req, res, next) => {
         return next(err);
     }
 
-    const bittrexOrderBook = await bittrexService.getOrderBook(req.query.tradingPair);
-    const poloniexOrderBook = await poloniexService.getOrderBook(req.query.tradingPair);
-
-    const orderBook = {
-        bittrex: bittrexOrderBook,
-        poloniex: poloniexOrderBook
-    };
-
+    const orderBook = await orderBookService.combineOrderBooks(req.query.tradingPair);
     res.status(200).send(orderBook);
 });
 
