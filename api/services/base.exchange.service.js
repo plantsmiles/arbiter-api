@@ -28,7 +28,7 @@ class BaseExchangeService extends EventEmitter {
         return this.exchangeMap.get(tradingPair);
     }
 
-    async _waitAndRefresh() {
+    async _waitAndRefresh(tradingPair) {
         await setTimeoutPromise(config.cacheTTL);
         this.logger.info(`Refreshing ${tradingPair} updating ${this.exchangeName} order book`);
 

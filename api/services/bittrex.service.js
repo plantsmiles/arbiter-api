@@ -42,10 +42,10 @@ class BittrexService extends BaseExchangeService {
             });
 
             this.emit('update', tradingPair);
-            await this._waitAndRefresh();
+            await this._waitAndRefresh(tradingPair);
         } catch (error) {
             this.logger.error(`Error occurred for ${tradingPair} updating ${this.exchangeName} order book`);
-            await this._waitAndRefresh();
+            await this._waitAndRefresh(tradingPair);
         }
     }
 }
