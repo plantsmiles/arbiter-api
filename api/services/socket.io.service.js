@@ -9,32 +9,28 @@ class SocketIoService {
     initialize(socketIo) {
         socketIo.on('connection', socket => {
             logger.info('SocketIo connection successful');
-            bittrexService.on('update', async (tradingPair) => {
-                logger.info(`Sending update from Bittrex for ${tradingPair} via socketIo`);
-                const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
-                socket.emit(tradingPair, updatedOrderBook);
+            socket.on('subscribe', (tradingPair) => {
+                bittrexService.on('update', async (tradingPair) => {
+                    logger.info(`Sending update from Bittrex for ${tradingPair} via socketIo`);
+                    const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
+                    socket.to(socket.id).emit(tradingPair, updatedOrderBook);
+                });
+
+                poloniexService.on('update', async (tradingPair) => {
+                    logger.info(`Sending update from Poloniex for ${tradingPair} via socketIo`);
+                    const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
+                    socket.to(socket.id).emit(tradingPair, updatedOrderBook);
+                });
             });
 
-            poloniexService.on('update', async (tradingPair) => {
-                logger.info(`Sending update from Poloniex for ${tradingPair} via socketIo`);
-                const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
-                socket.emit(tradingPair, updatedOrderBook);
+            socket.on('unsubscribe', (tradingPair) => {
+                bittrexService.removeListener(tradingPair);
+                poloniexService.removeListener(tradingPair);
             });
         });
 
-        socketIo.on('connection', socket => {
-            logger.info('SocketIo connection successful');
-            bittrexService.on('update', async (tradingPair) => {
-                logger.info(`Sending update from Bittrex for ${tradingPair} via socketIo`);
-                const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
-                socket.emit(tradingPair, updatedOrderBook);
-            });
+        socketIo.on('disconnect', () => {
 
-            poloniexService.on('update', async (tradingPair) => {
-                logger.info(`Sending update from Poloniex for ${tradingPair} via socketIo`);
-                const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
-                socket.emit(tradingPair, updatedOrderBook);
-            });
         });
     }
 }
