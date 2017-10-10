@@ -13,11 +13,17 @@ const markets = require('./api/routes/markets.route');
 
 const bittrexService = require('./api/services/bittrex.service');
 const poloniexService = require('./api/services/poloniex.service');
+const socketIoService = require('./api/services/socket.io.service');
 
-bittrexService.connect(config.tradingPairs);
-poloniexService.connect(config.tradingPairs);
+bittrexService.initialize(config.tradingPairs);
+poloniexService.initialize(config.tradingPairs);
 
 const app = express();
+const server = require('http').Server(app);
+
+// initialize web socket support
+const io = require('socket.io')(server);
+socketIoService.initialize(io);
 
 // middleware
 app.use(morgan('dev'));
@@ -49,6 +55,6 @@ app.use((err, req, res, next) => {
       .send(err.message || 'Internal Server Error');
 });
 
-app.listen(config.port, () => {
+server.listen(config.port, () => {
     logger.info(`Arbiter API listening on port ${config.port}!`)
 });

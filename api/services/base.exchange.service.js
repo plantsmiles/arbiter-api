@@ -1,23 +1,19 @@
 const logger = require('../util/logger');
 const EventEmitter = require('events');
 const _ = require('lodash');
+const util = require('util');
 
 class BaseExchangeService extends EventEmitter {
 
-    constructor(exchangeName, exchangeCache) {
+    constructor(exchangeName, exchangeMap) {
         // instantiate event emitter
         super();
-        this.exchangeCache = exchangeCache;
+        this.exchangeMap = exchangeMap;
         this.exchangeName = exchangeName;
         this.logger = logger;
-
-        this.exchangeCache.on('expired', async (tradingPairKey, value) => {
-            logger.info(`${tradingPairKey} expired updating ${this.exchangeName} order book`);
-            await this.updateOrderBook(tradingPairKey);
-        });
     }
 
-    async connect(tradingPairs) {
+    async initialize(tradingPairs) {
         this.tradingPairs = tradingPairs;
 
         _.each(this.tradingPairs, async (tradingPair) => {
@@ -27,7 +23,7 @@ class BaseExchangeService extends EventEmitter {
     }
 
     async getOrderBook(tradingPair) {
-        return this.exchangeCache.get(tradingPair);
+        return this.exchangeMap.get(tradingPair);
     }
 
 }

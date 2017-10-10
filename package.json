@@ -21,7 +21,8 @@
     "poloniex-api-node": "^1.6.0",
     "query-string": "^5.0.0",
     "request": "^2.83.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "socket.io": "^2.0.3"
   },
   "devDependencies": {
     "eslint": "^4.8.0",

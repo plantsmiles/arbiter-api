@@ -1,3 +1,4 @@
+const logger = require('../util/logger');
 const bittrexService = require('../services/bittrex.service');
 const poloniexService = require('../services/poloniex.service');
 
@@ -5,8 +6,24 @@ class OrderBookService {
     constructor() {}
 
     async combineOrderBooks(tradingPair) {
-        const bittrexOrderBook = await bittrexService.getOrderBook(tradingPair);
-        const poloniexOrderBook = await poloniexService.getOrderBook(tradingPair);
+        let bittrexOrderBook = await bittrexService.getOrderBook(tradingPair);
+        let poloniexOrderBook = await poloniexService.getOrderBook(tradingPair);
+
+        if (!bittrexOrderBook) {
+            logger.warn(`Bittrex book for ${tradingPair} is not available`);
+            bittrexOrderBook = {
+                bids: [],
+                asks: []
+            }
+        }
+
+        if (!poloniexOrderBook) {
+            logger.warn(`Poloniex book for ${tradingPair} is not available`);
+            poloniexOrderBook = {
+                bids: [],
+                asks: []
+            }
+        }
 
         const bids = this._generateOrders(bittrexOrderBook, poloniexOrderBook, 'bids');
         const asks = this._generateOrders(bittrexOrderBook, poloniexOrderBook, 'asks');

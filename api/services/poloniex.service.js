@@ -1,36 +1,51 @@
-const config = require('../util/config');
-const NodeCache = require('node-cache');
 const Poloniex = require('poloniex-api-node');
 const BaseExchangeService = require('./base.exchange.service');
+const util = require('util');
+const setTimeoutPromise = util.promisify(setTimeout);
 
 class PoloniexService extends BaseExchangeService {
 
     constructor() {
-        super('Poloniex', new NodeCache({stdTTL: config.cacheTTL, checkperiod: 10}));
+        super('Poloniex', new Map());
         this.poloniexApi = new Poloniex();
     }
 
     async updateOrderBook(tradingPair) {
-        const orderBook = await this.poloniexApi.returnOrderBook(tradingPair.replace('-', '_'));
-        this.logger.debug(`Received order book update from ${this.exchangeName} via REST API for ${tradingPair}`);
-        const asks = orderBook.asks.map((ask) => {
-            const pricePoint = Number(ask[0]).toFixed(10);
-            const volume = ask[1];
-            return [pricePoint, volume];
-        });
+        try {
+            const orderBook = await this.poloniexApi.returnOrderBook(tradingPair.replace('-', '_'));
+            this.logger.debug(`Received order book update from ${this.exchangeName} via REST API for ${tradingPair}`);
+            const asks = orderBook.asks.map((ask) => {
+                const pricePoint = Number(ask[0]).toFixed(10);
+                const volume = ask[1];
+                return [pricePoint, volume];
+            });
 
-        const bids = orderBook.bids.map((bid) => {
-            const pricePoint = Number(bid[0]).toFixed(10);
-            const volume = bid[1];
-            return [pricePoint, volume]
-        });
+            const bids = orderBook.bids.map((bid) => {
+                const pricePoint = Number(bid[0]).toFixed(10);
+                const volume = bid[1];
+                return [pricePoint, volume]
+            });
 
-        this.exchangeCache.set(tradingPair, {
-            asks: asks,
-            bids: bids
-        });
+            this.exchangeMap.set(tradingPair, {
+                asks: asks,
+                bids: bids
+            });
 
-        this.emit('update', tradingPair);
+            this.emit('update', tradingPair);
+
+            await setTimeoutPromise(30000);
+            this.logger.info(`Refreshing ${tradingPair} updating ${this.exchangeName} order book`);
+
+            await this.updateOrderBook(tradingPair);
+        } catch (err) {
+            this.logger.error(`Error occurred for ${tradingPair} updating ${this.exchangeName} order book`);
+
+            await setTimeoutPromise(30000);
+
+            this.logger.info(`Refreshing ${tradingPair} updating ${this.exchangeName} order book`);
+            await this.updateOrderBook(tradingPair);
+        }
+
     }
 }
 
