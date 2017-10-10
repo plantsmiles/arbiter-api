@@ -10,27 +10,28 @@ class SocketIoService {
         socketIo.on('connection', socket => {
             logger.info('SocketIo connection successful');
             socket.on('subscribe', (tradingPair) => {
+                logger.info(`Subscribing to ${tradingPair}`);
                 bittrexService.on('update', async (tradingPair) => {
-                    logger.info(`Sending update from Bittrex for ${tradingPair} via socketIo`);
                     const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
                     socket.to(socket.id).emit(tradingPair, updatedOrderBook);
                 });
 
                 poloniexService.on('update', async (tradingPair) => {
-                    logger.info(`Sending update from Poloniex for ${tradingPair} via socketIo`);
                     const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
                     socket.to(socket.id).emit(tradingPair, updatedOrderBook);
                 });
             });
 
             socket.on('unsubscribe', (tradingPair) => {
-                bittrexService.removeListener(tradingPair);
-                poloniexService.removeListener(tradingPair);
+                logger.info(`Unsubscribing from ${tradingPair}`);
+                bittrexService.removeListener('update', () => {});
+                poloniexService.removeListener('update', () => {});
             });
         });
 
         socketIo.on('disconnect', () => {
-
+            bittrexService.removeListener('update', () => {});
+            poloniexService.removeListener('update', () => {});
         });
     }
 }
