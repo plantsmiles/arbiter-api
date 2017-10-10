@@ -2,8 +2,6 @@ const config = require('../util/config');
 const requestPromise = require('request-promise');
 const queryString = require('query-string');
 const BaseExchangeService = require('./base.exchange.service');
-const util = require('util');
-const setTimeoutPromise = util.promisify(setTimeout);
 
 // ideally was going to use websocket api from the wrapper "node-bittrex-api" to get order book
 // but `updateExchangeState` only returns recently filled orders and not orderbooks
@@ -44,17 +42,10 @@ class BittrexService extends BaseExchangeService {
             });
 
             this.emit('update', tradingPair);
-
-            await setTimeoutPromise(30000);
-            this.logger.info(`Refreshing ${tradingPair} updating ${this.exchangeName} order book`);
-            await this.updateOrderBook(tradingPair);
+            await this._waitAndRefresh();
         } catch (error) {
             this.logger.error(`Error occurred for ${tradingPair} updating ${this.exchangeName} order book`);
-
-            await setTimeoutPromise(30000);
-
-            this.logger.info(`Refreshing ${tradingPair} updating ${this.exchangeName} order book`);
-            await this.updateOrderBook(tradingPair);
+            await this._waitAndRefresh();
         }
     }
 }

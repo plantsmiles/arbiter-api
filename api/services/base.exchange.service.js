@@ -2,6 +2,8 @@ const logger = require('../util/logger');
 const EventEmitter = require('events');
 const _ = require('lodash');
 const util = require('util');
+const setTimeoutPromise = util.promisify(setTimeout);
+const config = require('../util/config');
 
 class BaseExchangeService extends EventEmitter {
 
@@ -24,6 +26,13 @@ class BaseExchangeService extends EventEmitter {
 
     async getOrderBook(tradingPair) {
         return this.exchangeMap.get(tradingPair);
+    }
+
+    async _waitAndRefresh() {
+        await setTimeoutPromise(config.cacheTTL);
+        this.logger.info(`Refreshing ${tradingPair} updating ${this.exchangeName} order book`);
+
+        await this.updateOrderBook(tradingPair);
     }
 
 }

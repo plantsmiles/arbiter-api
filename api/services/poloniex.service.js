@@ -1,7 +1,5 @@
 const Poloniex = require('poloniex-api-node');
 const BaseExchangeService = require('./base.exchange.service');
-const util = require('util');
-const setTimeoutPromise = util.promisify(setTimeout);
 
 class PoloniexService extends BaseExchangeService {
 
@@ -32,18 +30,10 @@ class PoloniexService extends BaseExchangeService {
             });
 
             this.emit('update', tradingPair);
-
-            await setTimeoutPromise(30000);
-            this.logger.info(`Refreshing ${tradingPair} updating ${this.exchangeName} order book`);
-
-            await this.updateOrderBook(tradingPair);
+            await this._waitAndRefresh();
         } catch (err) {
             this.logger.error(`Error occurred for ${tradingPair} updating ${this.exchangeName} order book`);
-
-            await setTimeoutPromise(30000);
-
-            this.logger.info(`Refreshing ${tradingPair} updating ${this.exchangeName} order book`);
-            await this.updateOrderBook(tradingPair);
+            await this._waitAndRefresh();
         }
 
     }
