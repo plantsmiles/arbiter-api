@@ -11,6 +11,7 @@ class BittrexService extends BaseExchangeService {
 
     constructor() {
         super('Bittrex', new Map());
+        this.requestPromise = requestPromise;
     }
 
     async updateOrderBook(tradingPair) {
@@ -20,7 +21,7 @@ class BittrexService extends BaseExchangeService {
                 type: 'both'
             };
             const orderBookUrlRequest = `${config.bittrexApiUrl}?${queryString.stringify(queryParam)}`;
-            const orderBookResponse = await requestPromise(orderBookUrlRequest);
+            const orderBookResponse = await this.requestPromise(orderBookUrlRequest);
             this.logger.debug(`Received order book update from ${this.exchangeName} via REST API for ${tradingPair}`);
             const orderBook = JSON.parse(orderBookResponse).result;
 
