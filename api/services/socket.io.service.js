@@ -21,17 +21,6 @@ class SocketIoService {
                     socket.to(socket.id).emit(tradingPair, updatedOrderBook);
                 });
             });
-
-            socket.on('unsubscribe', (tradingPair) => {
-                logger.info(`Unsubscribing from ${tradingPair}`);
-                bittrexService.removeListener('update', () => {});
-                poloniexService.removeListener('update', () => {});
-            });
-        });
-
-        socketIo.on('disconnect', () => {
-            bittrexService.removeListener('update', () => {});
-            poloniexService.removeListener('update', () => {});
         });
     }
 }
