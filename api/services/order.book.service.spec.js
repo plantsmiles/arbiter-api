@@ -29,16 +29,16 @@ describe('OrderBookService', () => {
 
             expect(result.asks.length).to.equal(1);
             expect(result.asks[0].asks).to.equal(0.005);
-            expect(result.asks[0].bittrexVolume).to.equal(23);
-            expect(result.asks[0].poloniexVolume).to.equal(23);
-            expect(result.asks[0].totalVolume).to.equal(46);
+            expect(result.asks[0].bittrexVolume).to.equal(Number(23).toFixed(5));
+            expect(result.asks[0].poloniexVolume).to.equal(Number(23).toFixed(5));
+            expect(result.asks[0].totalVolume).to.equal(Number(46).toFixed(5));
             expect(result.asks[0].overlap).to.equal(true);
 
             expect(result.bids.length).to.equal(1);
             expect(result.bids[0].bids).to.equal(0.001);
-            expect(result.bids[0].bittrexVolume).to.equal(2);
-            expect(result.bids[0].poloniexVolume).to.equal(2);
-            expect(result.bids[0].totalVolume).to.equal(4);
+            expect(result.bids[0].bittrexVolume).to.equal(Number(2).toFixed(5));
+            expect(result.bids[0].poloniexVolume).to.equal(Number(2).toFixed(5));
+            expect(result.bids[0].totalVolume).to.equal(Number(4).toFixed(5));
             expect(result.bids[0].overlap).to.equal(true);
         });
     });

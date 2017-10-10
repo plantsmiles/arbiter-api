@@ -65,9 +65,9 @@ class OrderBookService {
             // build our order
             const order = {
                 [orderType]: pricePoint,
-                bittrexVolume: bittrexVolume,
-                poloniexVolume: poloniexVolume,
-                totalVolume: bittrexVolume + poloniexVolume,
+                bittrexVolume: bittrexVolume.toFixed(5),
+                poloniexVolume: poloniexVolume.toFixed(5),
+                totalVolume: (bittrexVolume + poloniexVolume).toFixed(5),
                 overlap: bittrexVolume > 0 && poloniexVolume > 0
             };
 
