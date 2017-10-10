@@ -9,16 +9,22 @@ class SocketIoService {
     initialize(socketIo) {
         socketIo.on('connection', socket => {
             logger.info('SocketIo connection successful');
-            socket.on('subscribe', (tradingPair) => {
-                logger.info(`Subscribing to ${tradingPair}`);
+            socket.on('subscribe', (tradingPairSubscribe) => {
+                logger.info(`Subscribing to ${tradingPairSubscribe}`);
                 bittrexService.on('update', async (tradingPair) => {
                     const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
-                    socket.to(socket.id).emit(tradingPair, updatedOrderBook);
+
+                    if (tradingPairSubscribe === tradingPair) {
+                        socket.emit(tradingPair, updatedOrderBook);
+                    }
                 });
 
                 poloniexService.on('update', async (tradingPair) => {
                     const updatedOrderBook = await orderBookService.combineOrderBooks(tradingPair);
-                    socket.to(socket.id).emit(tradingPair, updatedOrderBook);
+
+                    if (tradingPairSubscribe === tradingPair) {
+                        socket.emit(tradingPair, updatedOrderBook);
+                    }
                 });
             });
         });
